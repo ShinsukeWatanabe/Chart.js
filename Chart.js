@@ -2798,6 +2798,10 @@
 					strokeColor : dataset.strokeColor,
 					pointColor : dataset.pointColor,
 					pointStrokeColor : dataset.pointStrokeColor,
+					appDotIndex : dataset.appDotIndex || 0,
+					appDotBorderWidth : dataset.appDotBorderWidth || 0,
+					appDotColor : dataset.appDotColor || dataset.strokeColor,
+					appDotFillColor : dataset.appDotFillColor || dataset.appDotColor || dataset.fillColor,
 					points : []
 				};
 
@@ -3069,6 +3073,32 @@
 				helpers.each(pointsWithValues,function(point){
 					point.draw();
 				});
+
+				if (pointsWithValues.length > 0 && dataset.appDotIndex > 0.0) {
+					var roundHalf = Math.round(dataset.appDotIndex / 0.50) * 0.50;	// .5に寄せる
+					var prevIndex = Math.floor(roundHalf);
+					var nextIndex = Math.ceil(roundHalf);
+
+					var prevPoint = pointsWithValues[prevIndex];
+					var nxtPoint = pointsWithValues[nextIndex];
+
+					var halfX = prevPoint.x;
+					var halfY = prevPoint.y;
+
+					if (prevIndex !== nextIndex) {
+						halfX = (prevPoint.x + nxtPoint.x) / 2.0;
+						halfY = (prevPoint.y + nxtPoint.y) / 2.0;
+					}
+					ctx.closePath();
+					ctx.lineWidth = dataset.appDotBorderWidth;
+					ctx.strokeStyle = dataset.appDotColor;
+					ctx.fillStyle = dataset.appDotFillColor || dataset.appDotColor;
+					ctx.beginPath();
+					ctx.arc(halfX, halfY, ctx.lineWidth, 0, Math.PI * 2);
+					ctx.fill();
+					ctx.stroke();
+					ctx.closePath();
+				}
 			},this);
 		}
 	});
